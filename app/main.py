@@ -18,6 +18,10 @@ PROCESSED_PATH = "/tmp/processed_requests.json"
 
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {"message": "Hello, FastAPI is running!"}
+
 # === Persistence for processed requests ===
 def load_processed():
     if os.path.exists(PROCESSED_PATH):
@@ -51,7 +55,7 @@ def process_request(data):
             prev_readme = None
 
     gen = generate_app_code(
-        data["brief"],
+        data["task"],
         attachments=attachments,
         checks=data.get("checks", []),
         round_num=round_num,
@@ -62,7 +66,7 @@ def process_request(data):
     saved_info = gen.get("attachments", [])
 
     # Step 1: Get or create repo
-    repo = create_repo(task_id, description=f"Auto-generated app for task: {data['brief']}")
+    repo = create_repo(task_id, description=f"Auto-generated app for task: {data['task']}")
 
     # Step 2: Round-specific logic
     if round_num == 1:
